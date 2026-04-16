@@ -16,9 +16,9 @@ class CategoryChoices(models.TextChoices):
 
 class RequestTypeChoices(models.TextChoices):
     HALAL_FOOD = "halal_food", "I can't find halal food"
-    CHOOSE_WHAT_TO_BUY = "choose_what_to_buy", "I don't know what to buy"
+    CHOOSE_WHAT_TO_BUY = "recovery_kit", "I need a recovery kit"
     LUGGAGE_HELP = "luggage_help", "I can't move with my luggage"
-    SHOW_ME_AROUND = "show_me_around", "Show me around here"
+    SHOW_ME_AROUND = "show_me_around", "Talk with a local"
 
 
 class StatusChoices(models.TextChoices):
@@ -42,6 +42,7 @@ class SupportRequest(models.Model):
     category = models.CharField(max_length=32, choices=CategoryChoices.choices, editable=False)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    google_maps_url = models.URLField(blank=True)
     area = models.CharField(max_length=32, choices=AreaChoices.choices)
     note = models.TextField(blank=True)
     estimated_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
@@ -51,6 +52,7 @@ class SupportRequest(models.Model):
     status = models.CharField(max_length=32, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    people = models.PositiveIntegerField(default=1)
 
     class Meta:
         ordering = ["-created_at"]
@@ -60,6 +62,8 @@ class SupportRequest(models.Model):
             raise ValidationError({"request_type": "Unsupported request_type."})
         if self.estimated_price is not None and self.estimated_price < 0:
             raise ValidationError({"estimated_price": "estimated_price must be 0 or greater."})
+        if self.people < 1:
+            raise ValidationError({"people": "people must be 1 or greater."})
 
     def save(self, *args, **kwargs):
         self.category = REQUEST_TYPE_TO_CATEGORY.get(self.request_type, "")
