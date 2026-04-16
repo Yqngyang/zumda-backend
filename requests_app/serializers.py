@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import REQUEST_TYPE_TO_CATEGORY, AreaChoices, StatusChoices, SupportRequest
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import REQUEST_TYPE_TO_CATEGORY, AreaChoices, StatusChoices, SupportRequest
+
 
 class SupportRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,7 +25,14 @@ class SupportRequestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "category", "currency", "status", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "category",
+            "currency",
+            "status",
+            "created_at",
+            "updated_at",
+        ]
 
     def validate_area(self, value):
         allowed = {choice[0] for choice in AreaChoices.choices}
@@ -41,7 +49,7 @@ class SupportRequestSerializer(serializers.ModelSerializer):
         if value < 0:
             raise serializers.ValidationError("estimated_price must be 0 or greater.")
         return value
-    
+
     def validate_people(self, value):
         if value < 1:
             raise serializers.ValidationError("people must be 1 or greater.")
@@ -52,31 +60,31 @@ class SupportRequestSerializer(serializers.ModelSerializer):
 
         subject = f"[Zumda] 新しいオーダー: {instance.request_type}"
         message = f"""
-        新しいオーダーが入りました。
+新しいオーダーが入りました。
 
-        ID: {instance.id}
-        request_type: {instance.request_type}
-        area: {instance.area}
-        latitude: {instance.latitude}
-        longitude: {instance.longitude}
-        google_maps_url: {instance.google_maps_url}
-        estimated_price: {instance.estimated_price}
-        language: {instance.language}
-        people: {instance.people}
-        note: {instance.note}
-        created_at: {instance.created_at}
-        """.strip()
+ID: {instance.id}
+request_type: {instance.request_type}
+area: {instance.area}
+latitude: {instance.latitude}
+longitude: {instance.longitude}
+google_maps_url: {instance.google_maps_url}
+estimated_price: {instance.estimated_price}
+language: {instance.language}
+people: {instance.people}
+note: {instance.note}
+created_at: {instance.created_at}
+""".strip()
 
         try:
             send_mail(
-                    subject=subject,
-                    message=message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=settings.NOTIFICATION_EMAILS,
-                    fail_silently=False,
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=settings.NOTIFICATION_EMAILS,
+                fail_silently=False,
             )
         except Exception as e:
-                    print(f"mail send error: {e}")
+            print(f"mail send error: {e}")
 
         return instance
 

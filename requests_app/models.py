@@ -7,16 +7,14 @@ class AreaChoices(models.TextChoices):
     UENO = "ueno", "Ueno"
     AKIHABARA = "akihabara", "Akihabara"
     YUSHIMA = "yushima", "Yushima"
+    Asakura = "asakusa", "Asakusa"
 
 
 class CategoryChoices(models.TextChoices):
-    DELIVER = "deliver", "Deliver"
-    SOMEONE_COMES = "someone_comes", "Someone Comes"
+    SERVICE = "service", "Service"
 
 
 class RequestTypeChoices(models.TextChoices):
-    HALAL_FOOD = "halal_food", "I can't find halal food"
-    CHOOSE_WHAT_TO_BUY = "recovery_kit", "I need a recovery kit"
     LUGGAGE_HELP = "luggage_help", "I can't move with my luggage"
     SHOW_ME_AROUND = "show_me_around", "Talk with a local"
 
@@ -30,10 +28,8 @@ class StatusChoices(models.TextChoices):
 
 
 REQUEST_TYPE_TO_CATEGORY = {
-    RequestTypeChoices.HALAL_FOOD: CategoryChoices.DELIVER,
-    RequestTypeChoices.CHOOSE_WHAT_TO_BUY: CategoryChoices.DELIVER,
-    RequestTypeChoices.LUGGAGE_HELP: CategoryChoices.SOMEONE_COMES,
-    RequestTypeChoices.SHOW_ME_AROUND: CategoryChoices.SOMEONE_COMES,
+    RequestTypeChoices.LUGGAGE_HELP: CategoryChoices.SERVICE,
+    RequestTypeChoices.SHOW_ME_AROUND: CategoryChoices.SERVICE,
 }
 
 
