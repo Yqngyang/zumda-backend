@@ -1,3 +1,4 @@
+import logging
 from rest_framework import serializers
 from django.core.mail import send_mail
 from django.conf import settings
@@ -64,27 +65,45 @@ class SupportRequestSerializer(serializers.ModelSerializer):
 
 ID: {instance.id}
 request_type: {instance.request_type}
+category: {instance.category}
 area: {instance.area}
 latitude: {instance.latitude}
 longitude: {instance.longitude}
 google_maps_url: {instance.google_maps_url}
 estimated_price: {instance.estimated_price}
+currency: {instance.currency}
 language: {instance.language}
+contact_method: {instance.contact_method}
 people: {instance.people}
+status: {instance.status}
 note: {instance.note}
 created_at: {instance.created_at}
 """.strip()
 
+        print("=== MAIL DEBUG START ===")
+        print(f"DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
+        print(f"NOTIFICATION_EMAILS: {settings.NOTIFICATION_EMAILS}")
+        print(f"EMAIL_HOST_USER exists: {bool(settings.EMAIL_HOST_USER)}")
+        print(f"EMAIL_HOST_PASSWORD exists: {bool(settings.EMAIL_HOST_PASSWORD)}")
+
+        if not settings.NOTIFICATION_EMAILS:
+            print("mail skipped: NOTIFICATION_EMAILS is empty")
+            print("=== MAIL DEBUG END ===")
+            return instance
+
         try:
-            send_mail(
+            result = send_mail(
                 subject=subject,
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=settings.NOTIFICATION_EMAILS,
                 fail_silently=False,
             )
+            print(f"send_mail result: {result}")
         except Exception as e:
-            print(f"mail send error: {e}")
+            print(f"mail send error: {repr(e)}")
+
+        print("=== MAIL DEBUG END ===")
 
         return instance
 
