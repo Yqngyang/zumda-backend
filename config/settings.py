@@ -7,7 +7,15 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
-ALLOWED_HOSTS = [x.strip() for x in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if x.strip()]
+
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "zumda.app",
+    "www.zumda.app",
+    "zumda-backend-1088368601425.asia-northeast1.run.app",
+    *[x.strip() for x in os.getenv("ALLOWED_HOSTS", "").split(",") if x.strip()],
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -71,7 +79,32 @@ USE_TZ = True
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = [x.strip() for x in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if x.strip()]
+CORS_ALLOWED_ORIGINS = [
+    "https://zumda.app",
+    "https://www.zumda.app",
+    *[x.strip() for x in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if x.strip()],
+]
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],

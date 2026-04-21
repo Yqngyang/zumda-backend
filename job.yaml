@@ -1,0 +1,40 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: zumda-migrate
+spec:
+  template:
+    spec:
+      template:
+        spec:
+          taskCount: 1
+          template:
+            spec: {}
+          serviceAccountName: 1088368601425-compute@developer.gserviceaccount.com
+          containers:
+          - image: asia-northeast1-docker.pkg.dev/zumda-493508/zumda-repo/zumda-backend
+            command:
+            - sh
+            args:
+            - -c
+            - python manage.py migrate
+            env:
+            - name: ALLOWED_HOSTS
+              value: "127.0.0.1,localhost,zumda-backend-1088368601425.asia-northeast1.run.app"
+            - name: DEBUG
+              value: "False"
+            - name: POSTGRES_DB
+              value: "zumda"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "env.yaml に入れている値"
+            - name: POSTGRES_HOST
+              value: "/cloudsql/zumda-493508:asia-northeast1:zumda-db"
+            - name: POSTGRES_PORT
+              value: "5432"
+          volumes:
+          - name: cloudsql
+            cloudSqlInstance:
+              instances:
+              - zumda-493508:asia-northeast1:zumda-db
