@@ -1,8 +1,14 @@
 from decimal import Decimal
+import os
 import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models
+
+
+def chat_image_upload_to(instance, filename):
+    ext = os.path.splitext(filename)[1].lower() or ".jpg"
+    return f"chat_images/{uuid.uuid4().hex}{ext}"
 
 
 class AreaChoices(models.TextChoices):
@@ -144,7 +150,7 @@ class SupportRequestChatMessage(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     google_maps_url = models.URLField(blank=True)
 
-    image = models.ImageField(upload_to="chat_images/", blank=True, null=True)
+    image = models.ImageField(upload_to=chat_image_upload_to, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
