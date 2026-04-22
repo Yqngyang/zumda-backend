@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "storages",
     "requests_app",
 ]
 
@@ -77,8 +78,7 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Tokyo"
 USE_I18N = True
 USE_TZ = True
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -125,3 +125,19 @@ NOTIFICATION_EMAILS = [
     for email in os.getenv("NOTIFICATION_EMAILS", "").split(",")
     if email.strip()
 ]
+
+# =========================
+# GCS settings
+# =========================
+GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME", "")
+GS_DEFAULT_ACL = None
+GS_QUERYSTRING_AUTH = False
+
+# ローカル開発時だけ media をローカル保存したい場合
+USE_GCS = os.getenv("USE_GCS", "False").lower() == "true"
+
+if USE_GCS:
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
+else:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
